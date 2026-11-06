@@ -4,15 +4,16 @@ namespace Software_Design_Exam.Domain.Entities;
 
 public class Order
 {
-    //Properties
+    #region Properties
     public int Id {get; private set;}
     public decimal TotalPrice => _items.Sum(i => i.IntermediatePrice);
     public DateTime CreatedAt {get; private set;}
     public OrderStatus Status { get; private  set; } = OrderStatus.Active;
     private readonly List<OrderItem> _items = new();
     public IReadOnlyList<OrderItem> Items => _items;
+    #endregion
 
-    // Constructor
+    #region Constructor
     public Order (DateTime createdAt) 
     {
         
@@ -20,9 +21,10 @@ public class Order
     }
 
     private Order () { }
+    #endregion
 
-    // Methods
-    protected void EnsureActive()
+    #region Methods
+    private void EnsureActive()
     {
         if (Status != OrderStatus.Active)
         {
@@ -38,6 +40,10 @@ public class Order
     public void Complete()
     {
         EnsureActive();
+        if(_items == null)
+        {
+            throw new InvalidOperationException("You cannot complete an empty order!");
+        }
         Status = OrderStatus.Completed;   
     }
 
@@ -46,16 +52,22 @@ public class Order
         EnsureActive();
         ArgumentNullException.ThrowIfNull(item);       
         _items.Add(item);
+        //Rows if more of one item is added
 
     }
 
     public void RemoveItem(OrderItem item)
     {
         EnsureActive();
-        ArgumentNullException.ThrowIfNull(item); 
+        ArgumentNullException.ThrowIfNull(item);
+
+        if (!_items.Contains(item)){
+            throw new InvalidOperationException("The Item does not exist.");
+        }
         _items.Remove(item);
 
     }
+    #endregion
 
 
 
