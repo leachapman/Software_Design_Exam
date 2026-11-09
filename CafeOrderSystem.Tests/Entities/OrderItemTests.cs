@@ -30,4 +30,13 @@ public class OrderItemTests
         // Act + Assert
         Assert.Throws<ArgumentException>(() => new OrderItem(1, product));
     }
+
+    [TestCase(0)]
+    [TestCase(-1)]
+    public void Constructor_QuantityBelowOne_ThrowsArgumentException(int quantity)
+    {
+        var product = new Product("Croissant", 3.50m, ProductCategory.Pastry);
+
+        Assert.Throws<ArgumentException>(() => new OrderItem(quantity, product));
+    }
 }

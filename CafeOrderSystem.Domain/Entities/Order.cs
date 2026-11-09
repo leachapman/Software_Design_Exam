@@ -40,7 +40,7 @@ public class Order
     public void Complete()
     {
         EnsureActive();
-        if(_items == null)
+        if(_items.Count == 0)
         {
             throw new InvalidOperationException("You cannot complete an empty order!");
         }

@@ -37,7 +37,7 @@ public class Product
 
     private void EnsureValidName(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
     }
 
     public void ChangePrice(decimal price)
