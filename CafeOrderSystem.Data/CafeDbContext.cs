@@ -11,6 +11,7 @@ public class CafeDbContext : DbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,5 +37,12 @@ public class CafeDbContext : DbContext
         // Product.Name -> obligatory field, mx 100 chars
         modelBuilder.Entity<Product>()
             .Property(p => p.Name).IsRequired().HasMaxLength(100);
+        
+        // Order -> User: protect hisstory
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.User)
+            .WithMany()
+            .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

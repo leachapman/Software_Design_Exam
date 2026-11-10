@@ -6,7 +6,7 @@ namespace Software_Design_Exam.Tests.Entities;
 [TestFixture]
 public class OrderTests
 {
-    private static Order CreateOrder() => new Order(new DateTime(2026, 11, 9));
+    private static Order CreateOrder() => new Order(new DateTime(2026, 11, 9), new User("Test", UserRole.Barista));
     private static Product CreateProduct(decimal price) => new Product("Test", price, ProductCategory.Pastry);
 
     [Test]

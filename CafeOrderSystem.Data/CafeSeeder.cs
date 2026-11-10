@@ -22,6 +22,13 @@ public static class CafeSeeder
             new Product("Ice Tea", 4.00m, ProductCategory.ColdBeverage),
             new Product("Orangejuice", 4.50m, ProductCategory.ColdBeverage)
         );
+
+        if(!db.Users.Any()) return;
+        db.Users.AddRange(
+            new User("Marie", UserRole.Barista),
+            new User("Elena", UserRole.Barista),
+            new User("Sue", UserRole.Manager)
+        );
         db.SaveChanges();
 
 

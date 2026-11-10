@@ -11,13 +11,16 @@ public class Order
     public OrderStatus Status { get; private  set; } = OrderStatus.Active;
     private readonly List<OrderItem> _items = new();
     public IReadOnlyList<OrderItem> Items => _items;
+    public User User {get; private set;} = null!;
+    public int UserId {get; private set;}
     #endregion
 
     #region Constructor
-    public Order (DateTime createdAt) 
+    public Order (DateTime createdAt, User user) 
     {
-        
+        ArgumentNullException.ThrowIfNull(user);
         CreatedAt = createdAt;
+        User = user;
     }
 
     private Order () { }
@@ -67,6 +70,8 @@ public class Order
         _items.Remove(item);
 
     }
+
+
     #endregion
 
 
