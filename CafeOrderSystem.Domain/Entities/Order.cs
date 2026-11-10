@@ -70,13 +70,5 @@ public class Order
         _items.Remove(item);
 
     }
-
-
     #endregion
-
-
-
-
-
-
 }
