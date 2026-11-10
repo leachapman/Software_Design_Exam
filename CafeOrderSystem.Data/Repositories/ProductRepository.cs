@@ -13,6 +13,7 @@ public class ProductRepository : IProductRepository
         _db = db;
     }
 
+    #region Methods
     public void Add(Product product)
     {
         _db.Products.Add(product);
@@ -42,4 +43,6 @@ public class ProductRepository : IProductRepository
     {
         _db.SaveChanges();
     }
+
+    #endregion
 }
