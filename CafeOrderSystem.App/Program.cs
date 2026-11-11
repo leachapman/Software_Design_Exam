@@ -24,16 +24,17 @@ db.Database.EnsureCreated();
 CafeSeeder.Seed(db);
 
 // create repository
-var productsRepository = new ProductRepository(db);
+var productRepository = new ProductRepository(db);
 var orderRepository = new OrderRepository(db);
 var userRepository = new UserRepository(db);
 
 // Services
-var _orderService = new OrderService(productsRepository, orderRepository);
-var productService = new ProductService(productsRepository);
+var _orderService = new OrderService(productRepository, orderRepository);
+var productService = new ProductService(productRepository);
 
 var loginMenu = new LoginMenu(userRepository);
-var orderMenu = new OrderMenu(_orderService, productsRepository);
+var orderMenu = new OrderMenu(_orderService, productRepository);
+var productMenu = new ProductManagementMenu(productService, productRepository);
 
 
 
@@ -65,136 +66,7 @@ while (true)
     }
     else if (choice == 2 && user.Role == UserRole.Manager)
     {
-        while (true)
-        {
-            Console.WriteLine();
-            Console.WriteLine("===== Manage Products =====");
-            Console.WriteLine();
-            Console.WriteLine("Show all product (incl. removed) = 1");
-            Console.WriteLine("Create product = 2");
-            Console.WriteLine("Change Price = 3");
-            Console.WriteLine("Rename = 4");
-            Console.WriteLine("Remove from menu = 5");
-            Console.WriteLine("Add back to menu = 6");
-            Console.WriteLine("Back = 0");
-            Console.WriteLine();
-
-            var choiceManager = ConsoleInput.ReadInt("Choice: ");
-
-            if (choiceManager == 0)  
-            {
-                break; 
-            }
-
-            switch (choiceManager)
-            {
-
-                case 1:
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("======  All products  ======");
-                    Console.WriteLine();
-                    foreach(var p in productsRepository.GetAllProducts())
-                    {
-                        Console.WriteLine($"{p.Id,3}  {p.Name,-20} {p.Category,-15} {p.Price,6:0.00} € {(p.IsAvailable ? "" : "(removed)")}" );
-                    }
-                    Console.WriteLine("Press Enter to continue...");
-                    Console.ReadLine();
-                    break;
-                }
-                
-                case 2:
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("======  Create product  ======");
-                    Console.WriteLine();
-                    
-                    Console.Write("Name: ");
-                    var name = Console.ReadLine();
-
-                    var price = ConsoleInput.ReadDecimal("Price (use ',' instead of '.'): ");
-
-                    var category = ConsoleInput.ReadCategory();
-
-                    ConsoleHelper.RunSafely(() => 
-                    {
-                        productService.CreateProduct(user, name!, price, category);
-                        Console.WriteLine("Product created.");
-                    });
-
-                    break;
-                }
-                case 3:
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("======  Change Price  ======");
-                    Console.WriteLine();
-                    var id = ConsoleInput.ReadInt("Id: ");
-                    var newPrice = ConsoleInput.ReadDecimal("New price (use ',' instead of '.'): ");
-
-                    ConsoleHelper.RunSafely(() =>
-                    {
-                        productService.ChangePrice(user, id, newPrice);
-                        Console.WriteLine("Price changed.");
-                    });
-                
-                    break;
-                }
-
-                case 4:
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("======  Rename  ======");
-                    Console.WriteLine();
-                    var id = ConsoleInput.ReadInt("Id: ");
-                    Console.Write("Name: ");
-                    var newName = Console.ReadLine();
-
-                    ConsoleHelper.RunSafely(() =>
-                    {
-                        productService.Rename(user, id, newName!);
-                        Console.WriteLine("Name changed.");
-                    });
-                
-                    break;
-                }
-
-                case 5:
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("======  Remove from Menu  ======");
-                    Console.WriteLine();
-                    var id = ConsoleInput.ReadInt("Id: ");
-
-                    ConsoleHelper.RunSafely(() =>
-                    {
-                        productService.RemoveFromMenu(user, id);
-                        Console.WriteLine("Removed from Menu.");
-                    });
-
-                    break;
-                }
-
-                case 6:
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("======  Add back to Menu  ======");
-                    Console.WriteLine();
-                    var id = ConsoleInput.ReadInt("Id: ");
-
-                    ConsoleHelper.RunSafely(() =>
-                    {
-                        productService.AddToMenu(user, id);
-                        Console.WriteLine("Added back to Menu.");
-                    });
-
-                    break;
-                }
-                default:
-                    Console.WriteLine("Invalid input.");
-                    break;         
-            }          
-        }
+        productMenu.Run(user);
     }
     else
     {
