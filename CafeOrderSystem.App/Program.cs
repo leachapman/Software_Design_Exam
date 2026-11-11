@@ -5,6 +5,7 @@ using Software_Design_Exam.Domain.Entities;
 using Software_Design_Exam.Domain.Services;
 using Software_Design_Exam.Domain.Enums;
 using Software_Design_Exam.Domain.Discounts;
+using Software_Design_Exam.App.UI;
 
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -44,7 +45,7 @@ foreach (var u in users)
 User? user = null;
 while (user == null)
 {
-    var id = ReadInt("Your Id: ");
+    var id = ConsoleInput.ReadInt("Your Id: ");
     user = userRepository.GetById(id);
     if (user == null)
     {
@@ -66,7 +67,7 @@ while (true)
         Console.WriteLine("2 = Manage products");
     Console.WriteLine("0 = Exit");
     Console.WriteLine();
-    var choice = ReadInt("Choice: ");
+    var choice = ConsoleInput.ReadInt("Choice: ");
 
     if (choice == 0)
     {
@@ -86,13 +87,13 @@ while (true)
                 Console.WriteLine($"{p.Id,3}  {p.Name,-20} {p.Category,-15} {p.Price,6:0.00} €");
             }
             
-            var productId = ReadInt("Produkt-Id (0 = finished): ");
+            var productId = ConsoleInput.ReadInt("Produkt-Id (0 = finished): ");
             if (productId == 0)
             {
                 break;
             }
 
-            var quantity = ReadInt("Quantity: ");
+            var quantity = ConsoleInput.ReadInt("Quantity: ");
 
             try
             {
@@ -125,14 +126,10 @@ while (true)
             if (choiceToFinish == "c")
             {
                 
-                string? discount = null;
-                while(discount != "y" && discount != "n")
-                {
-                    Console.WriteLine("Student? yes(y) or no(n):");
-                    discount = Console.ReadLine()?.Trim().ToLower();
-                }
                 
-                IDiscountStrategy strategy = discount == "y" ?  new StudentDiscount() : new NoDiscount();
+                IDiscountStrategy strategy =  ConsoleInput.ReadYesNo("Student? (y/n): ")
+                    ? new StudentDiscount() 
+                    : new NoDiscount();
 
                 orderService.CompleteOrder(order, strategy);
 
@@ -177,7 +174,7 @@ while (true)
             Console.WriteLine("Back = 0");
             Console.WriteLine();
 
-            var choiceManager = ReadInt("Choice: ");
+            var choiceManager = ConsoleInput.ReadInt("Choice: ");
 
             if (choiceManager == 0)  
             {
@@ -210,26 +207,10 @@ while (true)
                     Console.Write("Name: ");
                     var name = Console.ReadLine();
 
-                    var price = ReadDecimal("Price: ");
+                    var price = ConsoleInput.ReadDecimal("Price (use ',' instead of '.'): ");
 
-                    Console.WriteLine("Category:");
-                    foreach (var c in Enum.GetValues<ProductCategory>())
-                    {
-                        Console.WriteLine($"  {(int)c} = {c}");
-                    }
-
-                    ProductCategory category;
-                    while (true)
-                    {
-                        var number = ReadInt("Category number: ");
-                        if (Enum.IsDefined(typeof(ProductCategory), number))
-                        {
-                            category = (ProductCategory)number;
-                            break;
-                        }
-                        Console.WriteLine("Invalid category.");
-                    }
-
+                    var category = ConsoleInput.ReadCategory();
+                    
                     try
                     {
                         productService.CreateProduct(user, name!, price, category);
@@ -247,8 +228,8 @@ while (true)
                     Console.WriteLine();
                     Console.WriteLine("======  Change Price  ======");
                     Console.WriteLine();
-                    var id = ReadInt("Id: ");
-                    var newPrice = ReadDecimal("New price (use ',' instead of '.'): ");
+                    var id = ConsoleInput.ReadInt("Id: ");
+                    var newPrice = ConsoleInput.ReadDecimal("New price (use ',' instead of '.'): ");
 
                     try
                     {
@@ -267,7 +248,7 @@ while (true)
                     Console.WriteLine();
                     Console.WriteLine("======  Rename  ======");
                     Console.WriteLine();
-                    var id = ReadInt("Id: ");
+                    var id = ConsoleInput.ReadInt("Id: ");
                     Console.Write("Name: ");
                     var newName = Console.ReadLine();
 
@@ -288,7 +269,7 @@ while (true)
                     Console.WriteLine();
                     Console.WriteLine("======  Remove from Menu  ======");
                     Console.WriteLine();
-                    var id = ReadInt("Id: ");
+                    var id = ConsoleInput.ReadInt("Id: ");
 
                     try
                     {
@@ -307,7 +288,7 @@ while (true)
                     Console.WriteLine();
                     Console.WriteLine("======  Add back to Menu  ======");
                     Console.WriteLine();
-                    var id = ReadInt("Id: ");
+                    var id = ConsoleInput.ReadInt("Id: ");
                     try
                     {
                         productService.AddToMenu(user, id);
@@ -332,24 +313,3 @@ while (true)
 }
 
 
-static int ReadInt(string prompt)
-{
-    while (true)
-    {
-        Console.Write(prompt);
-        if (int.TryParse(Console.ReadLine(), out var value))
-            return value;
-        Console.WriteLine("Please enter a valid number.");
-    }
-}
-
-static decimal ReadDecimal(string prompt)
-{
-    while (true)
-    {
-        Console.Write(prompt);
-        if (decimal.TryParse(Console.ReadLine(), out var value))
-            return value;
-        Console.WriteLine("Please enter a valid number (e.g. 3.50).");
-    }
-}
