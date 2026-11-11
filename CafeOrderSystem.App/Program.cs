@@ -24,38 +24,24 @@ db.Database.EnsureCreated();
 CafeSeeder.Seed(db);
 
 // create repository
-var productRepository = new ProductRepository(db);
+var productsRepository = new ProductRepository(db);
 var orderRepository = new OrderRepository(db);
 var userRepository = new UserRepository(db);
 
 // Services
-var orderService = new OrderService(productRepository, orderRepository);
-var productService = new ProductService(productRepository);
+var _orderService = new OrderService(productsRepository, orderRepository);
+var productService = new ProductService(productsRepository);
+
+var loginMenu = new LoginMenu(userRepository);
+var orderMenu = new OrderMenu(_orderService, productsRepository);
 
 
 
 // Login 
-var users = userRepository.GetAll();
-Console.WriteLine("=======  Login  ======");
-
-foreach (var u in users)
-{
-    Console.WriteLine($"{u.Id}: {u.Name} ({u.Role})");
-}
-User? user = null;
-while (user == null)
-{
-    var id = ConsoleInput.ReadInt("Your Id: ");
-    user = userRepository.GetById(id);
-    if (user == null)
-    {
-        Console.WriteLine("No employee with this Id found.");
-    }
-}
-Console.WriteLine($"Welcome {user.Name}");
+var user = loginMenu.Run();
 
 
-
+// Main Menu
 
 while (true)
 {
@@ -75,78 +61,7 @@ while (true)
     }
     else if (choice == 1)
     {
-        var order = orderService.StartOrder(user, DateTime.Now);
-
-        while (true)
-        {
-            Console.WriteLine();
-            Console.WriteLine("======  Menu  ======");
-            Console.WriteLine();
-            foreach(var p in productRepository.GetMenu())
-            {
-                Console.WriteLine($"{p.Id,3}  {p.Name,-20} {p.Category,-15} {p.Price,6:0.00} €");
-            }
-            
-            var productId = ConsoleInput.ReadInt("Produkt-Id (0 = finished): ");
-            if (productId == 0)
-            {
-                break;
-            }
-
-            var quantity = ConsoleInput.ReadInt("Quantity: ");
-
-            ConsoleHelper.RunSafely(() => orderService.AddProduct(order, productId, quantity));
-
-            Console.WriteLine();
-            Console.WriteLine($"======  Current order  ======");
-            Console.WriteLine();
-            foreach (var item in order.Items)
-            {
-                Console.WriteLine($"{item.Quantity} x {item.Product.Name,-20} {item.IntermediatePrice,6:0.00} €");
-            }
-            Console.WriteLine($"Total: {order.TotalPrice:0.00} €");
-
-        }
-        string? choiceToFinish = null;
-        while (choiceToFinish != "c" && choiceToFinish != "q")
-        {
-            Console.Write("Complete (c) or Cancel (q)? ");
-            choiceToFinish = Console.ReadLine()?.Trim().ToLower();
-        }
-
-        ConsoleHelper.RunSafely(() =>
-        {
-            if (choiceToFinish == "c")
-            {
-                
-                
-                IDiscountStrategy strategy =  ConsoleInput.ReadYesNo("Student? (y/n): ")
-                    ? new StudentDiscount() 
-                    : new NoDiscount();
-
-                orderService.CompleteOrder(order, strategy);
-
-                Console.WriteLine();
-                Console.WriteLine("===== Order saved. =====");
-                Console.WriteLine();
-                Console.WriteLine("The finished order:");
-                foreach (var item in order.Items)
-                {
-                    Console.WriteLine($"{item.Quantity} x {item.Product.Name,-20} {item.IntermediatePrice,6:0.00} €");
-                }
-                Console.WriteLine($"Total:    {order.TotalPrice,6:0.00} €");
-                Console.WriteLine($"Discount: {order.DiscountAmount,6:0.00} €");
-                Console.WriteLine($"To pay:   {order.FinalPrice,6:0.00} €");
-
-            }
-            else
-            {
-                orderService.CancelOrder(order);
-                Console.WriteLine();
-                Console.WriteLine("===== Order cancelled. =====");
-            }
-        });
-
+        orderMenu.Run(user);
     }
     else if (choice == 2 && user.Role == UserRole.Manager)
     {
@@ -179,7 +94,7 @@ while (true)
                     Console.WriteLine();
                     Console.WriteLine("======  All products  ======");
                     Console.WriteLine();
-                    foreach(var p in productRepository.GetAllProducts())
+                    foreach(var p in productsRepository.GetAllProducts())
                     {
                         Console.WriteLine($"{p.Id,3}  {p.Name,-20} {p.Category,-15} {p.Price,6:0.00} € {(p.IsAvailable ? "" : "(removed)")}" );
                     }
