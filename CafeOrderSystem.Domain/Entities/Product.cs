@@ -61,7 +61,7 @@ public class Product
         IsAvailable = false;
     }
 
-    public void AddToMenu(Product product)
+    public void AddToMenu()
     {
         if (IsAvailable)
         {
