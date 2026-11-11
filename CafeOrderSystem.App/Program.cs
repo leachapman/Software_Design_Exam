@@ -95,14 +95,7 @@ while (true)
 
             var quantity = ConsoleInput.ReadInt("Quantity: ");
 
-            try
-            {
-                orderService.AddProduct(order, productId, quantity);
-            }
-            catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
+            ConsoleHelper.RunSafely(() => orderService.AddProduct(order, productId, quantity));
 
             Console.WriteLine();
             Console.WriteLine($"======  Current order  ======");
@@ -121,7 +114,7 @@ while (true)
             choiceToFinish = Console.ReadLine()?.Trim().ToLower();
         }
 
-        try
+        ConsoleHelper.RunSafely(() =>
         {
             if (choiceToFinish == "c")
             {
@@ -152,11 +145,8 @@ while (true)
                 Console.WriteLine();
                 Console.WriteLine("===== Order cancelled. =====");
             }
-        }
-        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
+        });
+
     }
     else if (choice == 2 && user.Role == UserRole.Manager)
     {
@@ -210,16 +200,12 @@ while (true)
                     var price = ConsoleInput.ReadDecimal("Price (use ',' instead of '.'): ");
 
                     var category = ConsoleInput.ReadCategory();
-                    
-                    try
+
+                    ConsoleHelper.RunSafely(() => 
                     {
                         productService.CreateProduct(user, name!, price, category);
                         Console.WriteLine("Product created.");
-                    }
-                    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    });
 
                     break;
                 }
@@ -231,15 +217,12 @@ while (true)
                     var id = ConsoleInput.ReadInt("Id: ");
                     var newPrice = ConsoleInput.ReadDecimal("New price (use ',' instead of '.'): ");
 
-                    try
+                    ConsoleHelper.RunSafely(() =>
                     {
                         productService.ChangePrice(user, id, newPrice);
                         Console.WriteLine("Price changed.");
-                    }
-                    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    });
+                
                     break;
                 }
 
@@ -252,15 +235,12 @@ while (true)
                     Console.Write("Name: ");
                     var newName = Console.ReadLine();
 
-                    try
+                    ConsoleHelper.RunSafely(() =>
                     {
-                        productService.Rename(user, id, newName!    );
+                        productService.Rename(user, id, newName!);
                         Console.WriteLine("Name changed.");
-                    }
-                    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    });
+                
                     break;
                 }
 
@@ -271,15 +251,12 @@ while (true)
                     Console.WriteLine();
                     var id = ConsoleInput.ReadInt("Id: ");
 
-                    try
+                    ConsoleHelper.RunSafely(() =>
                     {
                         productService.RemoveFromMenu(user, id);
                         Console.WriteLine("Removed from Menu.");
-                    }
-                    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    });
+
                     break;
                 }
 
@@ -289,15 +266,13 @@ while (true)
                     Console.WriteLine("======  Add back to Menu  ======");
                     Console.WriteLine();
                     var id = ConsoleInput.ReadInt("Id: ");
-                    try
+
+                    ConsoleHelper.RunSafely(() =>
                     {
                         productService.AddToMenu(user, id);
                         Console.WriteLine("Added back to Menu.");
-                    }
-                    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    });
+
                     break;
                 }
                 default:
@@ -311,5 +286,3 @@ while (true)
         Console.WriteLine("Invalid Input");
     }
 }
-
-
