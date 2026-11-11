@@ -7,7 +7,7 @@ public static class CafeSeeder
 {
     public static void Seed(CafeDbContext db)
     {
-        if(db.Products.Any()) return; // only at the very first start
+        if(!db.Products.Any()) // only at the very first start
         db.Products.AddRange(
             new Product("Croissant", 3.50m, ProductCategory.Pastry),
             new Product("Cookie", 2.50m, ProductCategory.Pastry),
@@ -23,7 +23,7 @@ public static class CafeSeeder
             new Product("Orangejuice", 4.50m, ProductCategory.ColdBeverage)
         );
 
-        if(!db.Users.Any()) return;
+        if(!db.Users.Any()) 
         db.Users.AddRange(
             new User("Marie", UserRole.Barista),
             new User("Elena", UserRole.Barista),
