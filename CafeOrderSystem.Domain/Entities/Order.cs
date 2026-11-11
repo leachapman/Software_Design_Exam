@@ -1,3 +1,4 @@
+using Software_Design_Exam.Domain.Discounts;
 using Software_Design_Exam.Domain.Enums;
 
 namespace Software_Design_Exam.Domain.Entities;
@@ -13,6 +14,8 @@ public class Order
     public IReadOnlyList<OrderItem> Items => _items;
     public User User {get; private set;} = null!;
     public int UserId {get; private set;}
+    public decimal DiscountAmount {get; private set;}
+    public decimal FinalPrice => (TotalPrice - DiscountAmount);
     #endregion
 
     #region Constructor
@@ -55,8 +58,6 @@ public class Order
         EnsureActive();
         ArgumentNullException.ThrowIfNull(item);       
         _items.Add(item);
-        //Rows if more of one item is added
-
     }
 
     public void RemoveItem(OrderItem item)
@@ -69,6 +70,13 @@ public class Order
         }
         _items.Remove(item);
 
+    }
+
+    public void ApplyDiscount(IDiscountStrategy strategy)
+    {
+        EnsureActive();
+        ArgumentNullException.ThrowIfNull(strategy);
+        DiscountAmount = strategy.CalculateDiscount(this);
     }
     #endregion
 }

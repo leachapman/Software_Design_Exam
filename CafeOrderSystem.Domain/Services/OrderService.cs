@@ -1,3 +1,4 @@
+using Software_Design_Exam.Domain.Discounts;
 using Software_Design_Exam.Domain.Entities;
 using Software_Design_Exam.Domain.Interfaces;
 
@@ -33,8 +34,9 @@ public class OrderService
         order.RemoveItem(item);
     }
 
-    public void CompleteOrder(Order order)
+    public void CompleteOrder(Order order, IDiscountStrategy strategy)
     {
+        order.ApplyDiscount(strategy);
         order.Complete();
         _orders.Add(order);
         _orders.SaveChanges();

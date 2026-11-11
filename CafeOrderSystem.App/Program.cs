@@ -4,6 +4,7 @@ using Software_Design_Exam.Data.Repositories;
 using Software_Design_Exam.Domain.Entities;
 using Software_Design_Exam.Domain.Services;
 using Software_Design_Exam.Domain.Enums;
+using Software_Design_Exam.Domain.Discounts;
 
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -57,6 +58,7 @@ Console.WriteLine($"Welcome {user.Name}");
 
 while (true)
 {
+    Console.WriteLine();
     Console.WriteLine("=======  Main Menu  ======");
     Console.WriteLine();
     Console.WriteLine("1 = New Order");
@@ -76,6 +78,7 @@ while (true)
 
         while (true)
         {
+            Console.WriteLine();
             Console.WriteLine("======  Menu  ======");
             Console.WriteLine();
             foreach(var p in productRepository.GetMenu())
@@ -100,6 +103,7 @@ while (true)
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
+            Console.WriteLine();
             Console.WriteLine($"======  Current order  ======");
             Console.WriteLine();
             foreach (var item in order.Items)
@@ -120,7 +124,19 @@ while (true)
         {
             if (choiceToFinish == "c")
             {
-                orderService.CompleteOrder(order);
+                
+                string? discount = null;
+                while(discount != "y" && discount != "n")
+                {
+                    Console.WriteLine("Student? yes(y) or no(n):");
+                    discount = Console.ReadLine()?.Trim().ToLower();
+                }
+                
+                IDiscountStrategy strategy = discount == "y" ?  new StudentDiscount() : new NoDiscount();
+
+                orderService.CompleteOrder(order, strategy);
+
+                Console.WriteLine();
                 Console.WriteLine("===== Order saved. =====");
                 Console.WriteLine();
                 Console.WriteLine("The finished order:");
@@ -128,12 +144,15 @@ while (true)
                 {
                     Console.WriteLine($"{item.Quantity} x {item.Product.Name,-20} {item.IntermediatePrice,6:0.00} €");
                 }
-                Console.WriteLine($"Total: {order.TotalPrice:0.00} €");
+                Console.WriteLine($"Total:    {order.TotalPrice,6:0.00} €");
+                Console.WriteLine($"Discount: {order.DiscountAmount,6:0.00} €");
+                Console.WriteLine($"To pay:   {order.FinalPrice,6:0.00} €");
 
             }
             else
             {
                 orderService.CancelOrder(order);
+                Console.WriteLine();
                 Console.WriteLine("===== Order cancelled. =====");
             }
         }
@@ -170,6 +189,7 @@ while (true)
 
                 case 1:
                 {
+                    Console.WriteLine();
                     Console.WriteLine("======  All products  ======");
                     Console.WriteLine();
                     foreach(var p in productRepository.GetAllProducts())
@@ -182,7 +202,9 @@ while (true)
                 }
                 
                 case 2:
-                    {Console.WriteLine("======  Create product  ======");
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("======  Create product  ======");
                     Console.WriteLine();
                     
                     Console.Write("Name: ");
@@ -222,6 +244,7 @@ while (true)
                 }
                 case 3:
                 {
+                    Console.WriteLine();
                     Console.WriteLine("======  Change Price  ======");
                     Console.WriteLine();
                     var id = ReadInt("Id: ");
@@ -241,6 +264,7 @@ while (true)
 
                 case 4:
                 {
+                    Console.WriteLine();
                     Console.WriteLine("======  Rename  ======");
                     Console.WriteLine();
                     var id = ReadInt("Id: ");
@@ -261,6 +285,7 @@ while (true)
 
                 case 5:
                 {
+                    Console.WriteLine();
                     Console.WriteLine("======  Remove from Menu  ======");
                     Console.WriteLine();
                     var id = ReadInt("Id: ");
@@ -279,6 +304,7 @@ while (true)
 
                 case 6:
                 {
+                    Console.WriteLine();
                     Console.WriteLine("======  Add back to Menu  ======");
                     Console.WriteLine();
                     var id = ReadInt("Id: ");
