@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using Software_Design_Exam.Domain.Discounts;
 using Software_Design_Exam.Domain.Entities;
 using Software_Design_Exam.Domain.Interfaces;
 using Software_Design_Exam.Domain.Services;
@@ -30,6 +28,7 @@ public class ProductManagementMenu
             Console.WriteLine("Rename = 4");
             Console.WriteLine("Remove from menu = 5");
             Console.WriteLine("Add back to menu = 6");
+            Console.WriteLine("Revenue today = 7");
             Console.WriteLine("Back = 0");
             Console.WriteLine();
 
@@ -48,6 +47,7 @@ public class ProductManagementMenu
                 case 4: Rename(user); break;
                 case 5: RemoveFromMenu(user); break;
                 case 6: AddBackToMenu(user); break;
+                case 7:
                 default:  Console.WriteLine("Invalid input."); break;                            
             }          
         }
@@ -145,5 +145,4 @@ public class ProductManagementMenu
                         Console.WriteLine("Added back to Menu.");
                     });
     }
-
 }

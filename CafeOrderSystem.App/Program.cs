@@ -31,10 +31,12 @@ var userRepository = new UserRepository(db);
 // Services
 var _orderService = new OrderService(productRepository, orderRepository);
 var productService = new ProductService(productRepository);
+var revenueCalculator = new RevenueCalculator(orderRepository);
 
 var loginMenu = new LoginMenu(userRepository);
 var orderMenu = new OrderMenu(_orderService, productRepository);
 var productMenu = new ProductManagementMenu(productService, productRepository);
+var revenueMenu = new RevenueMenu(revenueCalculator, userRepository);
 
 
 
@@ -52,6 +54,10 @@ while (true)
     Console.WriteLine("1 = New Order");
     if(user.Role == UserRole.Manager)
         Console.WriteLine("2 = Manage products");
+    if(user.Role == UserRole.Manager)
+    {
+        Console.WriteLine("3 = Revenue today");
+    }
     Console.WriteLine("0 = Exit");
     Console.WriteLine();
     var choice = ConsoleInput.ReadInt("Choice: ");
@@ -67,6 +73,10 @@ while (true)
     else if (choice == 2 && user.Role == UserRole.Manager)
     {
         productMenu.Run(user);
+    }
+    else if (choice == 3 && user.Role == UserRole.Manager)
+    {
+        revenueMenu.Run(user);
     }
     else
     {

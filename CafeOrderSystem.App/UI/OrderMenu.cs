@@ -67,6 +67,7 @@ public class OrderMenu
                 Console.WriteLine("The finished order:");
                 PrintOrder(order);
                 Console.WriteLine($"Discount: {order.DiscountAmount,6:0.00} €");
+                Console.WriteLine($"Final Price: {order.FinalPrice, 6:0.00} €");
             }
             else
             {
