@@ -1,4 +1,3 @@
-using System.Runtime;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Software_Design_Exam.Data;
