@@ -10,7 +10,13 @@ public class OrderTests
     private static Order CreateOrder() => new Order(new DateTime(2026, 11, 9), new User("Test", UserRole.Barista));
     private static Product CreateProduct(decimal price) => new Product("Test", price, ProductCategory.Pastry);
     private static Product CreateHotProduct(decimal price) => new Product("Test", price, ProductCategory.HotBeverage);
-
+    private static Order OrderWith(params (string name, decimal price, ProductCategory cat, int qty)[] lines)
+    {
+        var order = new Order(new DateTime(2026, 11, 12), new User("Test", UserRole.Barista));
+        foreach (var l in lines)
+            order.AddItem(new OrderItem(l.qty, new Product(l.name, l.price, l.cat)));
+        return order;
+    }
 
     [Test]
     public void NewOrder_IsActiveWithZeroTotal()
@@ -82,7 +88,15 @@ public class OrderTests
         Assert.That(order.FinalPrice == order.TotalPrice - order.DiscountAmount);
     }
 
+    [Test]
+    public void ApplyDiscount_StudentDiscount_SetsDiscountAndFinalPrice()
+    {
+        var order = OrderWith(
+        ("Cappuccino", 4.00m, ProductCategory.HotBeverage, 1),
+        ("Latte",      4.50m, ProductCategory.HotBeverage, 1));
 
+        var discount = new StudentDiscount().CalculateDiscount(order);
 
-
+        Assert.That(order.FinalPrice == order.TotalPrice - order.DiscountAmount);
+    }
 }
